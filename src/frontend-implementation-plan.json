@@ -1,0 +1,83 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Gift planning & manual gift sending tracking UI for birthday contacts",
+  "requirements": [
+    {
+      "id": "REQ-13",
+      "summary": "Add an authenticated “Gifts” tab that lets users create, view, edit, and delete gift plans for existing birthday contacts using existing shadcn-ui + Tailwind styling.",
+      "acceptanceCriteria": [
+        "App navigation includes a third tab labeled \"Gifts\" alongside the existing \"Upcoming\" and \"Contacts\" tabs.",
+        "The Gifts screen displays a list of gift plans with contact name, gift name, status, and last updated time.",
+        "Users can create a gift plan by selecting an existing contact and entering gift details; users can also edit and delete existing gift plans.",
+        "All user-facing text is in English.",
+        "The UI uses existing shadcn components and Tailwind styling consistent with the current app theme."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add a third authenticated tab trigger/content labeled \"Gifts\" and wire it to a new Gifts screen component; keep existing authentication gating (authorization component behavior) consistent. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/GiftsManager.tsx",
+          "operation": "create",
+          "description": "Create the Gifts tab screen: list gift plans with contact name, gift name, status, and last updated time; provide add/edit/delete actions using existing shadcn-ui building blocks (Card, Button, Dialog, Alert, Skeleton, etc.) and Tailwind styling. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/GiftPlanForm.tsx",
+          "operation": "create",
+          "description": "Create a reusable form used by GiftsManager for creating/editing a gift plan: select an existing contact, edit gift details (gift name/idea, optional note/message, optional vendor URL if supported by backend, and status); ensure English validation/errors and consistent shadcn-ui + Tailwind styling. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/lib/time.ts",
+          "operation": "create",
+          "description": "Add small time formatting helpers for displaying the gift plan 'last updated' field from bigint timestamps (e.g., a readable local date/time or relative string) to support the Gifts list. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "summary": "Integrate gift plan data fetching and mutations with React Query, including cache invalidation and loading/error states consistent with existing screens.",
+      "acceptanceCriteria": [
+        "A dedicated React Query query is added to fetch gift plans from the canister and is enabled only when the actor is available.",
+        "React Query mutations exist for creating, updating, and deleting gift plans.",
+        "After any gift plan mutation succeeds, the relevant gift-plan query cache is invalidated so the Gifts list updates immediately without a manual refresh.",
+        "Errors and loading states are handled similarly to existing contacts/birthdays screens (skeletons + retry on error)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useGiftPlans.ts",
+          "operation": "create",
+          "description": "Add React Query hooks for gift plans (list + create + update + delete) using the actor; enable queries only when the actor is available (mirroring existing hooks), and invalidate the gift-plan query after successful mutations so the Gifts UI stays in sync. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/GiftsManager.tsx",
+          "operation": "modify",
+          "description": "Wire GiftsManager to the new React Query hooks, matching existing patterns for skeleton loading states and retry-on-error UI (similar to ContactsManager/UpcomingDashboard). Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "summary": "Make gift sending explicitly manual via a visible status workflow and a one-click action to mark a plan as Sent.",
+      "acceptanceCriteria": [
+        "Gift plans have a status field surfaced in the UI and can be updated by the user.",
+        "The Gifts list provides a one-click action to set status to \"Sent\" (with appropriate disabled/loading state while saving).",
+        "The UI does not claim that gifts are automatically delivered; it clearly presents the feature as tracking/planning."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/GiftsManager.tsx",
+          "operation": "modify",
+          "description": "Add status display and editing controls (workflow such as Planned → Ordered → Sent), plus a one-click \"Mark as Sent\" action that triggers an update mutation with disabled/loading state while saving; include clear copy indicating this is manual tracking only (no automation). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/GiftPlanForm.tsx",
+          "operation": "modify",
+          "description": "Include status selection/editing in the create/edit form and ensure labels/help text clearly indicate manual planning/tracking (no automatic delivery). Verify the component's usage instructions before implementing."
+        }
+      ]
+    }
+  ]
+}

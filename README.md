@@ -1,2 +1,3 @@
-# simple-birthday-reminder-app-contacts-upcoming-reminders-no-email
-Exported from Caffeine project: Simple Birthday Reminder App (contacts + upcoming reminders, no email)
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

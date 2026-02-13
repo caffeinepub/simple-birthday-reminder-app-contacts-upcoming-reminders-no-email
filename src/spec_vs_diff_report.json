@@ -1,0 +1,57 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-13T22:43:01.898Z",
+  "summary": "Diff adds a new Gifts tab and frontend gift-plan UI with React Query hooks and a manual status workflow. Backend adds a BirthdayGiftPlan type and per-principal storage plus a migration stub, but the backend gift-plan data model and canister method names/IDs do not match REQ-12 acceptance criteria (missing required fields like id/giftName/vendorUrl, and method names differ).",
+  "missing_requirements": [
+    {
+      "id": "REQ-12",
+      "requirement": "Backend gift plan public type must include: id, contactId, giftName, optional note/message, optional vendorUrl, status, createdAt, updatedAt.",
+      "reason": "Backend type `BirthdayGiftPlan` lacks `id`, uses `giftIdea` instead of `giftName`, has `notes` but no explicit note/message field naming, and has no `vendorUrl` field.",
+      "evidence": [
+        "backend/main.mo",
+        "backend/migration.mo"
+      ]
+    },
+    {
+      "id": "REQ-12",
+      "requirement": "Backend exposes canister methods named: listGiftPlans(), createGiftPlan(...), updateGiftPlan(...), deleteGiftPlan(id).",
+      "reason": "Frontend calls methods named `listBirthdayGiftPlans`, `addBirthdayGiftPlan`, `updateBirthdayGiftPlan`, and `deleteBirthdayGiftPlan`, indicating the implemented canister API names differ from the required method names.",
+      "evidence": [
+        "frontend/src/hooks/useGiftPlans.ts"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Gift plan fields for plannedDate and budget (and associated UI validation/inputs).",
+      "reason": "BuildRequest requires giftName, optional note/message, optional vendorUrl, status, createdAt, updatedAt; it does not request planned date or budget tracking.",
+      "evidence": [
+        "backend/main.mo",
+        "backend/migration.mo",
+        "frontend/src/components/GiftPlanForm.tsx",
+        "frontend/src/hooks/useGiftPlans.ts"
+      ]
+    },
+    {
+      "description": "Backend migration module adding giftPlansByPrincipal to stable state.",
+      "reason": "BuildRequest does not request a migration system/module; only requires backend to remain a single Motoko actor in backend/main.mo (this adds an additional backend file).",
+      "evidence": [
+        "backend/migration.mo",
+        "backend/main.mo"
+      ]
+    }
+  ],
+  "confidence": 0.74,
+  "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
+    "frontend-file-summaries.txt",
+    "frontend/src/App.tsx",
+    "frontend/src/components/GiftPlanForm.tsx",
+    "frontend/src/components/GiftsManager.tsx",
+    "frontend/src/hooks/useGiftPlans.ts",
+    "frontend/src/lib/time.ts",
+    "project_state.json"
+  ]
+}

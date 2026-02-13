@@ -1,0 +1,97 @@
+{
+  "kind": "build_request",
+  "title": "Add gift planning and manual gift sending tracking for birthday contacts",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-12",
+      "text": "Add backend support for tracking per-contact birthday gift plans (manual tracking only) scoped to the authenticated caller principal.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Can you add sending out gifts"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend defines a new public type for a gift plan associated to a contact (must include: id, contactId, giftName, optional note/message, optional vendorUrl, status, createdAt, updatedAt).",
+        "Gift plan records are stored per caller principal (each user only sees/manages their own gift plans).",
+        "Backend exposes canister methods to: listGiftPlans(), createGiftPlan(...), updateGiftPlan(...), deleteGiftPlan(id).",
+        "All gift-plan methods enforce the same authorization checks/patterns as existing contact/profile methods (unauthorized callers trap)."
+      ]
+    },
+    {
+      "id": "REQ-13",
+      "text": "Add a new “Gifts” tab in the authenticated app UI that lets users create, view, edit, and delete gift plans for their birthday contacts.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Can you add sending out gifts"
+        ]
+      },
+      "acceptanceCriteria": [
+        "App navigation includes a third tab labeled \"Gifts\" alongside the existing \"Upcoming\" and \"Contacts\" tabs.",
+        "The Gifts screen displays a list of gift plans with contact name, gift name, status, and last updated time.",
+        "Users can create a gift plan by selecting an existing contact and entering gift details; users can also edit and delete existing gift plans.",
+        "All user-facing text is in English.",
+        "The UI uses existing shadcn components and Tailwind styling consistent with the current app theme."
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "text": "Integrate gift plan data fetching/mutations using React Query and keep the UI in sync after create/update/delete operations.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Can you add sending out gifts"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A dedicated React Query query is added to fetch gift plans from the canister and is enabled only when the actor is available.",
+        "React Query mutations exist for creating, updating, and deleting gift plans.",
+        "After any gift plan mutation succeeds, the relevant gift-plan query cache is invalidated so the Gifts list updates immediately without a manual refresh.",
+        "Errors and loading states are handled similarly to existing contacts/birthdays screens (skeletons + retry on error)."
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "text": "Make “sending gifts” explicit as manual tracking in the UI by providing a status workflow (e.g., Planned → Ordered → Sent) and a quick action to mark a plan as Sent.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Can you add sending out gifts"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Gift plans have a status field surfaced in the UI and can be updated by the user.",
+        "The Gifts list provides a one-click action to set status to \"Sent\" (with appropriate disabled/loading state while saving).",
+        "The UI does not claim that gifts are automatically delivered; it clearly presents the feature as tracking/planning."
+      ]
+    }
+  ],
+  "constraints": [
+    "Backend must remain a single Motoko actor in backend/main.mo (no additional backend services).",
+    "Do not edit files under frontend/src/components/ui or other frontend immutablePaths; compose existing UI components instead.",
+    "No email-based automation and no third-party delivery/commerce integrations (manual planning/tracking only)."
+  ],
+  "nonGoals": [
+    "Integrating with external gift delivery providers (flowers/cake/balloons) or placing real orders.",
+    "Automatic scheduled sending of gifts without user action.",
+    "Sending email/SMS notifications or receipts."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
