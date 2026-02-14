@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
 import type { BirthdayGiftPlan } from '../backend';
@@ -24,6 +25,7 @@ export default function GiftPlanForm({ giftPlan, onSuccess }: GiftPlanFormProps)
   const [budget, setBudget] = useState('');
   const [notes, setNotes] = useState('');
   const [status, setStatus] = useState('Planned');
+  const [isYearlyRecurring, setIsYearlyRecurring] = useState(false);
   const [error, setError] = useState('');
 
   const createGiftPlan = useCreateGiftPlan();
@@ -36,6 +38,7 @@ export default function GiftPlanForm({ giftPlan, onSuccess }: GiftPlanFormProps)
       setBudget(giftPlan.budget ? String(giftPlan.budget) : '');
       setNotes(giftPlan.notes || '');
       setStatus(giftPlan.status);
+      setIsYearlyRecurring(giftPlan.isYearlyRecurring);
     }
   }, [giftPlan]);
 
@@ -76,6 +79,7 @@ export default function GiftPlanForm({ giftPlan, onSuccess }: GiftPlanFormProps)
           budget: budgetBigInt,
           notes: notesValue,
           status,
+          isYearlyRecurring,
         });
       } else {
         await createGiftPlan.mutateAsync({
@@ -85,6 +89,7 @@ export default function GiftPlanForm({ giftPlan, onSuccess }: GiftPlanFormProps)
           budget: budgetBigInt,
           notes: notesValue,
           status,
+          isYearlyRecurring,
         });
       }
       onSuccess();
@@ -165,7 +170,7 @@ export default function GiftPlanForm({ giftPlan, onSuccess }: GiftPlanFormProps)
           </SelectContent>
         </Select>
         <p className="text-xs text-muted-foreground">
-          Track your gift planning progress manually
+          Track your gift workflow: Planned → Ordered → Sent
         </p>
       </div>
 
@@ -179,6 +184,23 @@ export default function GiftPlanForm({ giftPlan, onSuccess }: GiftPlanFormProps)
           disabled={isPending}
           rows={3}
           className="resize-none"
+        />
+      </div>
+
+      <div className="flex items-center justify-between space-x-2 rounded-lg border p-4">
+        <div className="space-y-0.5">
+          <Label htmlFor="recurring" className="text-base">
+            Repeat every year
+          </Label>
+          <p className="text-sm text-muted-foreground">
+            Automatically reschedule this gift plan for next year after sending
+          </p>
+        </div>
+        <Switch
+          id="recurring"
+          checked={isYearlyRecurring}
+          onCheckedChange={setIsYearlyRecurring}
+          disabled={isPending}
         />
       </div>
 

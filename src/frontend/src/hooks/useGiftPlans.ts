@@ -8,10 +8,20 @@ export function useListGiftPlans() {
   return useQuery<BirthdayGiftPlan[]>({
     queryKey: ['giftPlans'],
     queryFn: async () => {
-      if (!actor) return [];
+      if (!actor) throw new Error('Actor not available');
       return actor.listBirthdayGiftPlans();
     },
     enabled: !!actor && !actorFetching,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    retry: (failureCount, error) => {
+      // Don't retry on authorization errors
+      if (error instanceof Error && error.message.includes('Unauthorized')) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 }
 
@@ -27,6 +37,7 @@ export function useCreateGiftPlan() {
       budget: bigint | null;
       notes: string | null;
       status: string;
+      isYearlyRecurring: boolean;
     }) => {
       if (!actor) throw new Error('Actor not available');
       return actor.addBirthdayGiftPlan(
@@ -35,7 +46,8 @@ export function useCreateGiftPlan() {
         params.plannedDate,
         params.budget,
         params.notes,
-        params.status
+        params.status,
+        params.isYearlyRecurring
       );
     },
     onSuccess: () => {
@@ -56,6 +68,7 @@ export function useUpdateGiftPlan() {
       budget: bigint | null;
       notes: string | null;
       status: string;
+      isYearlyRecurring: boolean;
     }) => {
       if (!actor) throw new Error('Actor not available');
       return actor.updateBirthdayGiftPlan(
@@ -64,7 +77,8 @@ export function useUpdateGiftPlan() {
         params.plannedDate,
         params.budget,
         params.notes,
-        params.status
+        params.status,
+        params.isYearlyRecurring
       );
     },
     onSuccess: () => {

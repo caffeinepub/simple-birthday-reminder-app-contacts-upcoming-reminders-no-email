@@ -2,13 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-a-new-gifts-tab-in-the-authenticated-app-ui-that-lets-users-create-view-edit-and-delete-gift-plans-for-their-birthday-contacts",
-      "featureTitle": "Add a new “Gifts” tab in the authenticated app UI that lets users create, view, edit, and delete gift plans for their birthday contacts.",
+      "featureId": "feature-remove-the-in-app-domain-configuration-flow-so-the-app-ui-no-longer-prompts-users-to-pick-apply-a-domain-slug-or-displays-any-applied-domain-url-inside-the-app",
+      "featureTitle": "Remove the in-app domain configuration flow so the app UI no longer prompts users to pick/apply a domain slug or displays any applied domain URL inside the app.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/GiftPlanForm.tsx",
-        "frontend/src/components/GiftsManager.tsx",
-        "frontend/src/lib/time.ts"
+        "frontend/src/components/DomainSlugSuggestionsCard.tsx",
+        "frontend/src/components/UpcomingDashboard.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -19,16 +17,17 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-13"
+        "REQ-1"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-integrate-gift-plan-data-fetching-mutations-using-react-query-and-keep-the-ui-in-sync-after-create-update-delete-operations",
-      "featureTitle": "Integrate gift plan data fetching/mutations using React Query and keep the UI in sync after create/update/delete operations.",
+      "featureId": "feature-clean-up-unused-domain-related-frontend-code-paths-after-removing-the-domain-ui-entry-point-components-hooks-utilities-so-the-frontend-builds-without-unused-import-lint-errors-and-no-longer-makes-domain-related-backend-calls-from-the-ui",
+      "featureTitle": "Clean up unused domain-related frontend code paths after removing the domain UI entry point (components/hooks/utilities) so the frontend builds without unused-import/lint errors and no longer makes domain-related backend calls from the UI.",
       "files": [
-        "frontend/src/components/GiftsManager.tsx",
-        "frontend/src/hooks/useGiftPlans.ts"
+        "frontend/src/hooks/useDomainConfiguration.ts",
+        "frontend/src/hooks/useDomainSlugs.ts",
+        "frontend/src/lib/domainSlug.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -39,27 +38,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-14"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-make-sending-gifts-explicit-as-manual-tracking-in-the-ui-by-providing-a-status-workflow-e-g-planned-ordered-sent-and-a-quick-action-to-mark-a-plan-as-sent",
-      "featureTitle": "Make “sending gifts” explicit as manual tracking in the UI by providing a status workflow (e.g., Planned → Ordered → Sent) and a quick action to mark a plan as Sent.",
-      "files": [
-        "frontend/src/components/GiftPlanForm.tsx",
-        "frontend/src/components/GiftsManager.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-15"
+        "REQ-2"
       ],
       "confidence": "high"
     }

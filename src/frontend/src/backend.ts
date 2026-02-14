@@ -109,6 +109,7 @@ export interface BirthdayGiftPlan {
     createdAt: Time;
     updatedAt: Time;
     notes?: string;
+    isYearlyRecurring: boolean;
     contactId: string;
     budget?: bigint;
     giftIdea: string;
@@ -120,8 +121,9 @@ export enum UserRole {
 }
 export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
-    addBirthdayGiftPlan(contactId: string, giftIdea: string, plannedDate: Time, budget: bigint | null, notes: string | null, status: string): Promise<string>;
+    addBirthdayGiftPlan(contactId: string, giftIdea: string, plannedDate: Time, budget: bigint | null, notes: string | null, status: string, isYearlyRecurring: boolean): Promise<string>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    configureDomain(slug: string): Promise<string>;
     createContact(id: string, name: string, birthMonth: number, birthDay: number, birthYear: bigint | null, notes: string | null): Promise<void>;
     deleteBirthdayGiftPlan(id: string): Promise<void>;
     deleteContact(id: string): Promise<void>;
@@ -129,13 +131,15 @@ export interface backendInterface {
     getBirthdayGiftPlansForContact(contactId: string): Promise<Array<BirthdayGiftPlan>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getConfiguredDomain(): Promise<string | null>;
     getUpcomingBirthdays(daysAhead: bigint): Promise<Array<Contact>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     listBirthdayGiftPlans(): Promise<Array<BirthdayGiftPlan>>;
     listContacts(): Promise<Array<Contact>>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
-    updateBirthdayGiftPlan(id: string, giftIdea: string, plannedDate: Time, budget: bigint | null, notes: string | null, status: string): Promise<void>;
+    suggestDomainSlugs(arg0: bigint): Promise<Array<string>>;
+    updateBirthdayGiftPlan(id: string, giftIdea: string, plannedDate: Time, budget: bigint | null, notes: string | null, status: string, isYearlyRecurring: boolean): Promise<void>;
     updateContact(id: string, name: string, birthMonth: number, birthDay: number, birthYear: bigint | null, notes: string | null): Promise<void>;
 }
 import type { BirthdayGiftPlan as _BirthdayGiftPlan, Contact as _Contact, Time as _Time, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
@@ -155,17 +159,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async addBirthdayGiftPlan(arg0: string, arg1: string, arg2: Time, arg3: bigint | null, arg4: string | null, arg5: string): Promise<string> {
+    async addBirthdayGiftPlan(arg0: string, arg1: string, arg2: Time, arg3: bigint | null, arg4: string | null, arg5: string, arg6: boolean): Promise<string> {
         if (this.processError) {
             try {
-                const result = await this.actor.addBirthdayGiftPlan(arg0, arg1, arg2, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n2(this._uploadFile, this._downloadFile, arg4), arg5);
+                const result = await this.actor.addBirthdayGiftPlan(arg0, arg1, arg2, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n2(this._uploadFile, this._downloadFile, arg4), arg5, arg6);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.addBirthdayGiftPlan(arg0, arg1, arg2, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n2(this._uploadFile, this._downloadFile, arg4), arg5);
+            const result = await this.actor.addBirthdayGiftPlan(arg0, arg1, arg2, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n2(this._uploadFile, this._downloadFile, arg4), arg5, arg6);
             return result;
         }
     }
@@ -180,6 +184,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n3(this._uploadFile, this._downloadFile, arg1));
+            return result;
+        }
+    }
+    async configureDomain(arg0: string): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.configureDomain(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.configureDomain(arg0);
             return result;
         }
     }
@@ -281,6 +299,20 @@ export class Backend implements backendInterface {
             return from_candid_UserRole_n12(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getConfiguredDomain(): Promise<string | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getConfiguredDomain();
+                return from_candid_opt_n8(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getConfiguredDomain();
+            return from_candid_opt_n8(this._uploadFile, this._downloadFile, result);
+        }
+    }
     async getUpcomingBirthdays(arg0: bigint): Promise<Array<Contact>> {
         if (this.processError) {
             try {
@@ -365,17 +397,31 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async updateBirthdayGiftPlan(arg0: string, arg1: string, arg2: Time, arg3: bigint | null, arg4: string | null, arg5: string): Promise<void> {
+    async suggestDomainSlugs(arg0: bigint): Promise<Array<string>> {
         if (this.processError) {
             try {
-                const result = await this.actor.updateBirthdayGiftPlan(arg0, arg1, arg2, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n2(this._uploadFile, this._downloadFile, arg4), arg5);
+                const result = await this.actor.suggestDomainSlugs(arg0);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.updateBirthdayGiftPlan(arg0, arg1, arg2, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n2(this._uploadFile, this._downloadFile, arg4), arg5);
+            const result = await this.actor.suggestDomainSlugs(arg0);
+            return result;
+        }
+    }
+    async updateBirthdayGiftPlan(arg0: string, arg1: string, arg2: Time, arg3: bigint | null, arg4: string | null, arg5: string, arg6: boolean): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateBirthdayGiftPlan(arg0, arg1, arg2, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n2(this._uploadFile, this._downloadFile, arg4), arg5, arg6);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateBirthdayGiftPlan(arg0, arg1, arg2, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n2(this._uploadFile, this._downloadFile, arg4), arg5, arg6);
             return result;
         }
     }
@@ -451,6 +497,7 @@ function from_candid_record_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint
     createdAt: _Time;
     updatedAt: _Time;
     notes: [] | [string];
+    isYearlyRecurring: boolean;
     contactId: string;
     budget: [] | [bigint];
     giftIdea: string;
@@ -460,6 +507,7 @@ function from_candid_record_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint
     createdAt: Time;
     updatedAt: Time;
     notes?: string;
+    isYearlyRecurring: boolean;
     contactId: string;
     budget?: bigint;
     giftIdea: string;
@@ -470,6 +518,7 @@ function from_candid_record_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint
         createdAt: value.createdAt,
         updatedAt: value.updatedAt,
         notes: record_opt_to_undefined(from_candid_opt_n8(_uploadFile, _downloadFile, value.notes)),
+        isYearlyRecurring: value.isYearlyRecurring,
         contactId: value.contactId,
         budget: record_opt_to_undefined(from_candid_opt_n9(_uploadFile, _downloadFile, value.budget)),
         giftIdea: value.giftIdea

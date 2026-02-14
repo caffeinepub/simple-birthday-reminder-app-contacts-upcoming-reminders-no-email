@@ -1,81 +1,51 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Gift planning & manual gift sending tracking UI for birthday contacts",
+  "title": "Remove domain configuration UI and related frontend code",
   "requirements": [
     {
-      "id": "REQ-13",
-      "summary": "Add an authenticated “Gifts” tab that lets users create, view, edit, and delete gift plans for existing birthday contacts using existing shadcn-ui + Tailwind styling.",
+      "id": "REQ-1",
+      "summary": "Remove the in-app domain configuration UI so users are no longer prompted to choose/apply domain slugs or shown an applied domain URL anywhere in the app.",
       "acceptanceCriteria": [
-        "App navigation includes a third tab labeled \"Gifts\" alongside the existing \"Upcoming\" and \"Contacts\" tabs.",
-        "The Gifts screen displays a list of gift plans with contact name, gift name, status, and last updated time.",
-        "Users can create a gift plan by selecting an existing contact and entering gift details; users can also edit and delete existing gift plans.",
-        "All user-facing text is in English.",
-        "The UI uses existing shadcn components and Tailwind styling consistent with the current app theme."
+        "The Upcoming dashboard no longer renders the DomainSlugSuggestionsCard (or any equivalent domain-setup UI).",
+        "No user-facing text in the app references applying/configuring a domain, domain slugs, or shows a public URL as part of an in-app success state.",
+        "Authenticated and unauthenticated user flows (login, profile setup, tabs, contacts, gifts, upcoming birthdays) continue to work without errors after removing the domain UI."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/components/UpcomingDashboard.tsx",
           "operation": "modify",
-          "description": "Add a third authenticated tab trigger/content labeled \"Gifts\" and wire it to a new Gifts screen component; keep existing authentication gating (authorization component behavior) consistent. Verify the component's usage instructions before implementing."
+          "description": "Remove the DomainSlugSuggestionsCard import and JSX render so the Upcoming dashboard no longer shows any domain-setup prompt (do not modify any files under frontend/src/components/ui)."
         },
         {
-          "path": "frontend/src/components/GiftsManager.tsx",
-          "operation": "create",
-          "description": "Create the Gifts tab screen: list gift plans with contact name, gift name, status, and last updated time; provide add/edit/delete actions using existing shadcn-ui building blocks (Card, Button, Dialog, Alert, Skeleton, etc.) and Tailwind styling. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/GiftPlanForm.tsx",
-          "operation": "create",
-          "description": "Create a reusable form used by GiftsManager for creating/editing a gift plan: select an existing contact, edit gift details (gift name/idea, optional note/message, optional vendor URL if supported by backend, and status); ensure English validation/errors and consistent shadcn-ui + Tailwind styling. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/lib/time.ts",
-          "operation": "create",
-          "description": "Add small time formatting helpers for displaying the gift plan 'last updated' field from bigint timestamps (e.g., a readable local date/time or relative string) to support the Gifts list. Verify the component's usage instructions before implementing."
+          "path": "frontend/src/components/DomainSlugSuggestionsCard.tsx",
+          "operation": "delete",
+          "description": "Delete the domain configuration card component that prompts users to select/apply a domain and displays a public URL success state."
         }
       ]
     },
     {
-      "id": "REQ-14",
-      "summary": "Integrate gift plan data fetching and mutations with React Query, including cache invalidation and loading/error states consistent with existing screens.",
+      "id": "REQ-2",
+      "summary": "Remove unused domain-related hooks/utilities and eliminate domain-related backend calls from the UI so the frontend builds cleanly without unused imports or lint issues.",
       "acceptanceCriteria": [
-        "A dedicated React Query query is added to fetch gift plans from the canister and is enabled only when the actor is available.",
-        "React Query mutations exist for creating, updating, and deleting gift plans.",
-        "After any gift plan mutation succeeds, the relevant gift-plan query cache is invalidated so the Gifts list updates immediately without a manual refresh.",
-        "Errors and loading states are handled similarly to existing contacts/birthdays screens (skeletons + retry on error)."
+        "Frontend compiles successfully after removing the domain UI and related imports.",
+        "The app does not invoke domain-related hooks/mutations (e.g., suggestion fetching or configureDomain) during normal navigation."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useGiftPlans.ts",
-          "operation": "create",
-          "description": "Add React Query hooks for gift plans (list + create + update + delete) using the actor; enable queries only when the actor is available (mirroring existing hooks), and invalidate the gift-plan query after successful mutations so the Gifts UI stays in sync. Verify the component's usage instructions before implementing."
+          "path": "frontend/src/hooks/useDomainConfiguration.ts",
+          "operation": "delete",
+          "description": "Remove domain configuration hooks (including calls to getConfiguredDomain/configureDomain) so the UI no longer performs domain-related backend calls."
         },
         {
-          "path": "frontend/src/components/GiftsManager.tsx",
-          "operation": "modify",
-          "description": "Wire GiftsManager to the new React Query hooks, matching existing patterns for skeleton loading states and retry-on-error UI (similar to ContactsManager/UpcomingDashboard). Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-15",
-      "summary": "Make gift sending explicitly manual via a visible status workflow and a one-click action to mark a plan as Sent.",
-      "acceptanceCriteria": [
-        "Gift plans have a status field surfaced in the UI and can be updated by the user.",
-        "The Gifts list provides a one-click action to set status to \"Sent\" (with appropriate disabled/loading state while saving).",
-        "The UI does not claim that gifts are automatically delivered; it clearly presents the feature as tracking/planning."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/GiftsManager.tsx",
-          "operation": "modify",
-          "description": "Add status display and editing controls (workflow such as Planned → Ordered → Sent), plus a one-click \"Mark as Sent\" action that triggers an update mutation with disabled/loading state while saving; include clear copy indicating this is manual tracking only (no automation). Verify the component's usage instructions before implementing."
+          "path": "frontend/src/hooks/useDomainSlugs.ts",
+          "operation": "delete",
+          "description": "Remove the domain slug suggestion hook to prevent any suggestion-fetching behavior or related caching from being triggered."
         },
         {
-          "path": "frontend/src/components/GiftPlanForm.tsx",
-          "operation": "modify",
-          "description": "Include status selection/editing in the create/edit form and ensure labels/help text clearly indicate manual planning/tracking (no automatic delivery). Verify the component's usage instructions before implementing."
+          "path": "frontend/src/lib/domainSlug.ts",
+          "operation": "delete",
+          "description": "Remove domain slug validation/normalization utilities if they are no longer referenced after deleting the domain UI/hooks, ensuring no unused-import errors remain."
         }
       ]
     }

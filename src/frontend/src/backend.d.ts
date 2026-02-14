@@ -27,6 +27,7 @@ export interface BirthdayGiftPlan {
     createdAt: Time;
     updatedAt: Time;
     notes?: string;
+    isYearlyRecurring: boolean;
     contactId: string;
     budget?: bigint;
     giftIdea: string;
@@ -37,8 +38,9 @@ export enum UserRole {
     guest = "guest"
 }
 export interface backendInterface {
-    addBirthdayGiftPlan(contactId: string, giftIdea: string, plannedDate: Time, budget: bigint | null, notes: string | null, status: string): Promise<string>;
+    addBirthdayGiftPlan(contactId: string, giftIdea: string, plannedDate: Time, budget: bigint | null, notes: string | null, status: string, isYearlyRecurring: boolean): Promise<string>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    configureDomain(slug: string): Promise<string>;
     createContact(id: string, name: string, birthMonth: number, birthDay: number, birthYear: bigint | null, notes: string | null): Promise<void>;
     deleteBirthdayGiftPlan(id: string): Promise<void>;
     deleteContact(id: string): Promise<void>;
@@ -46,12 +48,14 @@ export interface backendInterface {
     getBirthdayGiftPlansForContact(contactId: string): Promise<Array<BirthdayGiftPlan>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getConfiguredDomain(): Promise<string | null>;
     getUpcomingBirthdays(daysAhead: bigint): Promise<Array<Contact>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     listBirthdayGiftPlans(): Promise<Array<BirthdayGiftPlan>>;
     listContacts(): Promise<Array<Contact>>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
-    updateBirthdayGiftPlan(id: string, giftIdea: string, plannedDate: Time, budget: bigint | null, notes: string | null, status: string): Promise<void>;
+    suggestDomainSlugs(arg0: bigint): Promise<Array<string>>;
+    updateBirthdayGiftPlan(id: string, giftIdea: string, plannedDate: Time, budget: bigint | null, notes: string | null, status: string, isYearlyRecurring: boolean): Promise<void>;
     updateContact(id: string, name: string, birthMonth: number, birthDay: number, birthYear: bigint | null, notes: string | null): Promise<void>;
 }

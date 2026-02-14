@@ -20,6 +20,7 @@ export const BirthdayGiftPlan = IDL.Record({
   'createdAt' : Time,
   'updatedAt' : Time,
   'notes' : IDL.Opt(IDL.Text),
+  'isYearlyRecurring' : IDL.Bool,
   'contactId' : IDL.Text,
   'budget' : IDL.Opt(IDL.Nat),
   'giftIdea' : IDL.Text,
@@ -39,11 +40,20 @@ export const Contact = IDL.Record({
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'addBirthdayGiftPlan' : IDL.Func(
-      [IDL.Text, IDL.Text, Time, IDL.Opt(IDL.Nat), IDL.Opt(IDL.Text), IDL.Text],
+      [
+        IDL.Text,
+        IDL.Text,
+        Time,
+        IDL.Opt(IDL.Nat),
+        IDL.Opt(IDL.Text),
+        IDL.Text,
+        IDL.Bool,
+      ],
       [IDL.Text],
       [],
     ),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'configureDomain' : IDL.Func([IDL.Text], [IDL.Text], []),
   'createContact' : IDL.Func(
       [
         IDL.Text,
@@ -70,6 +80,7 @@ export const idlService = IDL.Service({
     ),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getConfiguredDomain' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
   'getUpcomingBirthdays' : IDL.Func([IDL.Nat], [IDL.Vec(Contact)], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
@@ -84,8 +95,17 @@ export const idlService = IDL.Service({
     ),
   'listContacts' : IDL.Func([], [IDL.Vec(Contact)], ['query']),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'suggestDomainSlugs' : IDL.Func([IDL.Nat], [IDL.Vec(IDL.Text)], []),
   'updateBirthdayGiftPlan' : IDL.Func(
-      [IDL.Text, IDL.Text, Time, IDL.Opt(IDL.Nat), IDL.Opt(IDL.Text), IDL.Text],
+      [
+        IDL.Text,
+        IDL.Text,
+        Time,
+        IDL.Opt(IDL.Nat),
+        IDL.Opt(IDL.Text),
+        IDL.Text,
+        IDL.Bool,
+      ],
       [],
       [],
     ),
@@ -118,6 +138,7 @@ export const idlFactory = ({ IDL }) => {
     'createdAt' : Time,
     'updatedAt' : Time,
     'notes' : IDL.Opt(IDL.Text),
+    'isYearlyRecurring' : IDL.Bool,
     'contactId' : IDL.Text,
     'budget' : IDL.Opt(IDL.Nat),
     'giftIdea' : IDL.Text,
@@ -144,11 +165,13 @@ export const idlFactory = ({ IDL }) => {
           IDL.Opt(IDL.Nat),
           IDL.Opt(IDL.Text),
           IDL.Text,
+          IDL.Bool,
         ],
         [IDL.Text],
         [],
       ),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'configureDomain' : IDL.Func([IDL.Text], [IDL.Text], []),
     'createContact' : IDL.Func(
         [
           IDL.Text,
@@ -175,6 +198,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getConfiguredDomain' : IDL.Func([], [IDL.Opt(IDL.Text)], ['query']),
     'getUpcomingBirthdays' : IDL.Func([IDL.Nat], [IDL.Vec(Contact)], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
@@ -189,6 +213,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'listContacts' : IDL.Func([], [IDL.Vec(Contact)], ['query']),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'suggestDomainSlugs' : IDL.Func([IDL.Nat], [IDL.Vec(IDL.Text)], []),
     'updateBirthdayGiftPlan' : IDL.Func(
         [
           IDL.Text,
@@ -197,6 +222,7 @@ export const idlFactory = ({ IDL }) => {
           IDL.Opt(IDL.Nat),
           IDL.Opt(IDL.Text),
           IDL.Text,
+          IDL.Bool,
         ],
         [],
         [],

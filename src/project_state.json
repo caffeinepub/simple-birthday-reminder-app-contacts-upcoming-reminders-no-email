@@ -1,85 +1,26 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 7,
-  "summary": "Birthday reminder app: users store contacts and birthdays and receive reminders; user now requests adding automated sending of gifts/cards, which requires email and/or third-party delivery integrations and was previously considered future/out of scope.",
-  "architectural_notes": [
-    "Initial MVP will be reminders only; automated sending requires email and/or third-party delivery integrations.",
-    "Automated gift sending requires integrating with third-party delivery/commerce providers (and likely email/notification support), including handling payment/order flow, scheduling, and receipts."
-  ],
+  "projectStateVersion": 3,
+  "summary": "New project",
+  "architectural_notes": [],
   "known_issues": [
-    "Email feature is currently disabled/unavailable, blocking any email-based automation."
+    "Domain name was unintentionally added/embedded in the app and needs to be removed."
   ],
-  "isFixRequest": false,
+  "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-implement-internet-identity-sign-in-and-use-the-authenticated-principal-as-the-owner-for-all-birthday-data-so-each-user-only-sees-and-manages-their-own-contacts",
-      "title": "Implement Internet Identity sign-in and use the authenticated principal as the owner for all birthday data so each user only sees and manages their own contacts.",
+      "id": "feature-remove-the-in-app-domain-configuration-flow-so-the-app-ui-no-longer-prompts-users-to-pick-apply-a-domain-slug-or-displays-any-applied-domain-url-inside-the-app",
+      "title": "Remove the in-app domain configuration flow so the app UI no longer prompts users to pick/apply a domain slug or displays any applied domain URL inside the app.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-frontend-build-a-contacts-management-ui-to-add-edit-delete-birthday-contacts-with-a-simple-form-name-birthday-date-picker-optional-notes",
-      "title": "Frontend: Build a contacts management UI to add/edit/delete birthday contacts with a simple form (name + birthday date picker; optional notes).",
+      "id": "feature-clean-up-unused-domain-related-frontend-code-paths-after-removing-the-domain-ui-entry-point-components-hooks-utilities-so-the-frontend-builds-without-unused-import-lint-errors-and-no-longer-makes-domain-related-backend-calls-from-the-ui",
+      "title": "Clean up unused domain-related frontend code paths after removing the domain UI entry point (components/hooks/utilities) so the frontend builds without unused-import/lint errors and no longer makes domain-related backend calls from the UI.",
       "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-frontend-create-an-upcoming-birthdays-dashboard-view-showing-birthdays-due-today-and-upcoming-within-selectable-time-ranges-e-g-7-30-90-days-with-sorting-and-simple-search-filter-by-name",
-      "title": "Frontend: Create an “Upcoming Birthdays” dashboard view showing birthdays due today and upcoming within selectable time ranges (e.g., 7/30/90 days), with sorting and simple search/filter by name.",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-frontend-use-react-query-for-all-canister-data-fetching-mutations-and-ensure-cache-invalidation-so-lists-and-dashboards-stay-in-sync-after-any-create-update-delete",
-      "title": "Frontend: Use React Query for all canister data fetching/mutations and ensure cache invalidation so lists and dashboards stay in sync after any create/update/delete.",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-consistent-visual-theme-for-the-app-colors-typography-spacing-and-components-appropriate-for-a-birthday-reminder-product-and-apply-it-across-the-main-screens",
-      "title": "Add a consistent visual theme for the app (colors, typography, spacing, and components) appropriate for a birthday reminder product, and apply it across the main screens.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-refine-the-frontend-contact-form-and-related-react-query-hooks-to-allow-users-to-add-edit-optional-birth-year-and-notes-and-show-these-fields-where-appropriate-in-the-ui-contacts-list-and-upcoming-dashboard-while-keeping-all-user-facing-text-in-english",
-      "title": "Refine the frontend contact form and related React Query hooks to allow users to add/edit optional birth year and notes, and show these fields where appropriate in the UI (contacts list and upcoming dashboard), while keeping all user-facing text in English.",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-new-gifts-tab-in-the-authenticated-app-ui-that-lets-users-create-view-edit-and-delete-gift-plans-for-their-birthday-contacts",
-      "title": "Add a new “Gifts” tab in the authenticated app UI that lets users create, view, edit, and delete gift plans for their birthday contacts.",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-integrate-gift-plan-data-fetching-mutations-using-react-query-and-keep-the-ui-in-sync-after-create-update-delete-operations",
-      "title": "Integrate gift plan data fetching/mutations using React Query and keep the UI in sync after create/update/delete operations.",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-make-sending-gifts-explicit-as-manual-tracking-in-the-ui-by-providing-a-status-workflow-e-g-planned-ordered-sent-and-a-quick-action-to-mark-a-plan-as-sent",
-      "title": "Make “sending gifts” explicit as manual tracking in the UI by providing a status workflow (e.g., Planned → Ordered → Sent) and a quick action to mark a plan as Sent.",
-      "reqIds": [
-        "REQ-15"
+        "REQ-2"
       ],
       "version": 1
     }
@@ -87,78 +28,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Create a simple birthday-reminder app where users enter people’s names and birthdays and the app reminds the user when a birthday is coming up.",
+      "summary": "Remove/revert the domain name that was added inside the app (was not intended to be included in-app UI/content).",
       "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "(Future) Automatically send birthday items (e.g., card/cake/flowers/balloons) every year without user action, requiring email and/or external delivery service integrations.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Email sending support to enable automated birthday notifications/flows (dependent on account/email feature availability).",
-      "reqIds": [],
-      "status": "blocked"
-    },
-    {
-      "id": "AR-5",
-      "summary": "Backend: Create Motoko data model and stable storage for birthday contacts (at minimum: id, name, birthday month/day/year optional, notes optional, createdAt/updatedAt) scoped per user principal.",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Backend: Expose CRUD canister methods for contacts: list, create, update, delete, and a query method to compute upcoming birthdays within a configurable window (e.g., next N days) based on the current date.",
-      "reqIds": [
-        "REQ-3"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Fix the backend upcoming-birthday calculation so `getUpcomingBirthdays(daysAhead)` returns correct results based on the current date (from `Time.now()`), without hardcoded date values or simplified 30-day month assumptions, and correctly handles windows that cross month/year boundaries.",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "Refine backend contact storage and CRUD so optional `birthYear` and optional `notes` are supported end-to-end: allow creating and updating contacts with these optional fields, and ensure updating a contact does not unintentionally erase existing optional values.",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-10",
-      "summary": "Refine backend persistence so user profiles and contacts survive canister upgrades by using stable storage patterns (and add `backend/migration.mo` only if required by the existing migration policy/state).",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-11",
-      "summary": "Add automated sending of birthday gifts (e.g., cards/flowers/cake) on schedule, via integration with external delivery/commerce services (and likely email/notifications for confirmations/receipts).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-12",
-      "summary": "Add backend support for tracking per-contact birthday gift plans (manual tracking only) scoped to the authenticated caller principal.",
-      "reqIds": [
-        "REQ-12"
-      ],
       "status": "pending"
     }
   ],
-  "projectName": "Simple Birthday Reminder App (contacts + upcoming reminders, no email)",
+  "projectName": "Remove in-app domain name/domain configuration UI",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

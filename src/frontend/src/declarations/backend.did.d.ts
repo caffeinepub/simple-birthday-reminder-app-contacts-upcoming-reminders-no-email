@@ -16,6 +16,7 @@ export interface BirthdayGiftPlan {
   'createdAt' : Time,
   'updatedAt' : Time,
   'notes' : [] | [string],
+  'isYearlyRecurring' : boolean,
   'contactId' : string,
   'budget' : [] | [bigint],
   'giftIdea' : string,
@@ -38,10 +39,11 @@ export type UserRole = { 'admin' : null } |
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addBirthdayGiftPlan' : ActorMethod<
-    [string, string, Time, [] | [bigint], [] | [string], string],
+    [string, string, Time, [] | [bigint], [] | [string], string, boolean],
     string
   >,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'configureDomain' : ActorMethod<[string], string>,
   'createContact' : ActorMethod<
     [string, string, number, number, [] | [bigint], [] | [string]],
     undefined
@@ -55,14 +57,16 @@ export interface _SERVICE {
   >,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getConfiguredDomain' : ActorMethod<[], [] | [string]>,
   'getUpcomingBirthdays' : ActorMethod<[bigint], Array<Contact>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'listBirthdayGiftPlans' : ActorMethod<[], Array<BirthdayGiftPlan>>,
   'listContacts' : ActorMethod<[], Array<Contact>>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'suggestDomainSlugs' : ActorMethod<[bigint], Array<string>>,
   'updateBirthdayGiftPlan' : ActorMethod<
-    [string, string, Time, [] | [bigint], [] | [string], string],
+    [string, string, Time, [] | [bigint], [] | [string], string, boolean],
     undefined
   >,
   'updateContact' : ActorMethod<

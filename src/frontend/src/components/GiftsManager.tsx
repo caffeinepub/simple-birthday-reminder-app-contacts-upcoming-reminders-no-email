@@ -6,11 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
-import { Plus, Gift, Pencil, Trash2, AlertCircle, Package, CheckCircle, Clock, StickyNote } from 'lucide-react';
+import { Plus, Gift, Pencil, Trash2, AlertCircle, Package, CheckCircle, Clock, StickyNote, Send, RefreshCw } from 'lucide-react';
 import type { BirthdayGiftPlan } from '../backend';
 import { formatTimestamp } from '../lib/time';
 
@@ -29,7 +29,8 @@ export default function GiftsManager() {
   const [showForm, setShowForm] = useState(false);
   const [editingPlan, setEditingPlan] = useState<BirthdayGiftPlan | null>(null);
   const [deletingPlan, setDeletingPlan] = useState<BirthdayGiftPlan | null>(null);
-  const [markingSent, setMarkingSent] = useState<string | null>(null);
+  const [sendingGift, setSendingGift] = useState<BirthdayGiftPlan | null>(null);
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
   const getContactName = (contactId: string) => {
     const contact = contacts?.find((c) => c.id === contactId);
@@ -51,9 +52,30 @@ export default function GiftsManager() {
     }
   };
 
-  const handleMarkAsSent = async (plan: BirthdayGiftPlan) => {
-    if (plan.status === 'Sent') return;
-    setMarkingSent(plan.contactId);
+  const handleSendGift = async () => {
+    if (!sendingGift) return;
+    setProcessingId(sendingGift.contactId);
+    try {
+      await updateGiftPlan.mutateAsync({
+        id: sendingGift.contactId,
+        giftIdea: sendingGift.giftIdea,
+        plannedDate: sendingGift.plannedDate,
+        budget: sendingGift.budget || null,
+        notes: sendingGift.notes || null,
+        status: 'Sent',
+        isYearlyRecurring: sendingGift.isYearlyRecurring,
+      });
+      setSendingGift(null);
+    } catch (err) {
+      console.error('Update failed:', err);
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleMarkAsOrdered = async (plan: BirthdayGiftPlan) => {
+    if (plan.status === 'Ordered' || plan.status === 'Sent') return;
+    setProcessingId(plan.contactId);
     try {
       await updateGiftPlan.mutateAsync({
         id: plan.contactId,
@@ -61,12 +83,13 @@ export default function GiftsManager() {
         plannedDate: plan.plannedDate,
         budget: plan.budget || null,
         notes: plan.notes || null,
-        status: 'Sent',
+        status: 'Ordered',
+        isYearlyRecurring: plan.isYearlyRecurring,
       });
     } catch (err) {
       console.error('Update failed:', err);
     } finally {
-      setMarkingSent(null);
+      setProcessingId(null);
     }
   };
 
@@ -75,9 +98,21 @@ export default function GiftsManager() {
     setEditingPlan(null);
   };
 
-  const isLoading = plansLoading || contactsLoading;
+  const getErrorMessage = (error: Error | null): string => {
+    if (!error) return 'Failed to load gift plans';
+    
+    const message = error.message || '';
+    
+    // Handle authorization errors gracefully
+    if (message.includes('Unauthorized')) {
+      return 'You need to be logged in to view gift plans. Please log in and try again.';
+    }
+    
+    return `Failed to load gift plans: ${message}`;
+  };
 
-  if (isLoading) {
+  // Show loading state only for gift plans (don't block on contacts)
+  if (plansLoading) {
     return (
       <div className="max-w-4xl mx-auto space-y-4">
         <Skeleton className="h-12 w-full" />
@@ -93,9 +128,15 @@ export default function GiftsManager() {
       <div className="max-w-4xl mx-auto">
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="flex items-center justify-between">
-            <span>Failed to load gift plans: {plansError.message}</span>
-            <Button variant="outline" size="sm" onClick={() => refetchPlans()}>
+          <AlertDescription className="flex items-center justify-between gap-4">
+            <span>{getErrorMessage(plansError as Error)}</span>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => refetchPlans()}
+              className="flex-shrink-0"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
               Retry
             </Button>
           </AlertDescription>
@@ -110,7 +151,7 @@ export default function GiftsManager() {
         <div>
           <h2 className="text-2xl font-bold">Gift Planning</h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Track gift ideas and manually manage your gift sending
+            Plan, order, and send gifts for your contacts' birthdays
           </p>
         </div>
         <Button onClick={() => setShowForm(true)} className="gap-2 w-full sm:w-auto">
@@ -140,19 +181,25 @@ export default function GiftsManager() {
           {giftPlans.map((plan) => {
             const statusConfig = STATUS_CONFIG[plan.status as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.Planned;
             const StatusIcon = statusConfig.icon;
-            const isSending = markingSent === plan.contactId;
+            const isProcessing = processingId === plan.contactId;
 
             return (
               <Card key={plan.contactId} className="hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <CardTitle className="text-xl">{getContactName(plan.contactId)}</CardTitle>
                         <Badge className={statusConfig.color}>
                           <StatusIcon className="w-3 h-3 mr-1" />
                           {plan.status}
                         </Badge>
+                        {plan.isYearlyRecurring && (
+                          <Badge variant="outline" className="gap-1">
+                            <RefreshCw className="w-3 h-3" />
+                            Yearly
+                          </Badge>
+                        )}
                       </div>
                       <CardDescription className="flex items-center gap-2">
                         <Gift className="w-4 h-4 flex-shrink-0" />
@@ -181,27 +228,45 @@ export default function GiftsManager() {
                         Last updated: {formatTimestamp(plan.updatedAt)}
                       </div>
                     </div>
-                    <div className="flex gap-2 ml-4">
-                      {plan.status !== 'Sent' && (
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      {plan.status === 'Planned' && (
                         <Button
-                          variant="outline"
+                          variant="default"
                           size="sm"
-                          onClick={() => handleMarkAsSent(plan)}
-                          disabled={isSending}
-                          className="hover:bg-green-100 dark:hover:bg-green-900/20 hover:text-green-600 flex-shrink-0"
+                          onClick={() => handleMarkAsOrdered(plan)}
+                          disabled={isProcessing}
+                          className="bg-yellow-600 hover:bg-yellow-700 text-white flex-shrink-0"
                         >
-                          {isSending ? (
+                          {isProcessing ? (
                             <>
                               <Clock className="w-4 h-4 mr-1 animate-spin" />
-                              Saving...
+                              Updating...
                             </>
                           ) : (
                             <>
-                              <CheckCircle className="w-4 h-4 mr-1" />
-                              Mark Sent
+                              <Package className="w-4 h-4 mr-1" />
+                              Mark Ordered
                             </>
                           )}
                         </Button>
+                      )}
+                      {plan.status === 'Ordered' && (
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={() => setSendingGift(plan)}
+                          disabled={isProcessing}
+                          className="bg-green-600 hover:bg-green-700 text-white flex-shrink-0"
+                        >
+                          <Send className="w-4 h-4 mr-1" />
+                          Send a gift
+                        </Button>
+                      )}
+                      {plan.status === 'Sent' && (
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 text-sm font-medium flex-shrink-0">
+                          <CheckCircle className="w-4 h-4" />
+                          Gift Sent
+                        </div>
                       )}
                       <Button
                         variant="ghost"
@@ -236,6 +301,62 @@ export default function GiftsManager() {
           <GiftPlanForm giftPlan={editingPlan} onSuccess={handleFormClose} />
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={!!sendingGift} onOpenChange={() => setSendingGift(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Send Gift?</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <p>
+                You're about to mark the gift for{' '}
+                <strong>{sendingGift ? getContactName(sendingGift.contactId) : ''}</strong> as sent.
+              </p>
+              {sendingGift && (
+                <div className="bg-muted p-3 rounded-md space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Gift className="w-4 h-4 text-muted-foreground" />
+                    <span className="font-medium">{sendingGift.giftIdea}</span>
+                  </div>
+                  {sendingGift.budget && (
+                    <div className="text-muted-foreground">
+                      Budget: ${sendingGift.budget.toString()}
+                    </div>
+                  )}
+                  {sendingGift.isYearlyRecurring && (
+                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                      <RefreshCw className="w-4 h-4" />
+                      <span className="font-medium">This plan will automatically repeat next year</span>
+                    </div>
+                  )}
+                </div>
+              )}
+              <p className="text-sm">
+                This will update the status to "Sent" and record the current time.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleSendGift}
+              disabled={updateGiftPlan.isPending}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              {updateGiftPlan.isPending ? (
+                <>
+                  <Clock className="w-4 h-4 mr-2 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4 mr-2" />
+                  Send a gift
+                </>
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={!!deletingPlan} onOpenChange={() => setDeletingPlan(null)}>
         <AlertDialogContent>

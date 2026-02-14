@@ -1,13 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Add manual per-contact birthday gift planning and “sent” tracking for authenticated users.
+**Goal:** Remove the in-app domain configuration experience so the UI no longer prompts users to select/apply a domain slug or shows an applied domain URL.
 
 **Planned changes:**
-- Add backend storage and canister methods to create, list, update, and delete gift plans scoped to the authenticated caller principal.
-- Define a gift plan type containing: id, contactId, giftName, optional note/message, optional vendorUrl, status, createdAt, updatedAt.
-- Add a new “Gifts” tab in the authenticated UI to view gift plans and create/edit/delete plans linked to existing contacts.
-- Integrate gift plan fetching and mutations via React Query, including cache invalidation after create/update/delete and consistent loading/error states.
-- Add a manual status workflow (e.g., Planned → Ordered → Sent) and a one-click action in the list to mark a plan as “Sent,” clearly presented as tracking only.
+- Remove the domain-setup UI entry points from the Upcoming dashboard (e.g., stop rendering `DomainSlugSuggestionsCard` or equivalent).
+- Remove/clean up domain-related frontend code paths (components/hooks/utilities) so the app no longer triggers domain suggestion/configuration calls during normal navigation and builds without unused import/lint issues.
+- Ensure core authenticated/unauthenticated flows (login, profile setup, tabs, contacts, gifts, upcoming birthdays) continue to work without errors after removing the domain UI.
 
-**User-visible outcome:** Users can open a new “Gifts” tab to plan gifts for their birthday contacts, update gift details and status, quickly mark a gift as sent, and manage (edit/delete) their own gift plans with the UI staying in sync automatically.
+**User-visible outcome:** Users will no longer see any in-app prompts or success messages related to domains/domain slugs/public URLs, and the rest of the app will function as before.

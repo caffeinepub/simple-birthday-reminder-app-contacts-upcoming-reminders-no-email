@@ -1,4 +1,5 @@
 import Array "mo:core/Array";
+import Iter "mo:core/Iter";
 import Map "mo:core/Map";
 import Time "mo:core/Time";
 import List "mo:core/List";
@@ -7,12 +8,12 @@ import Nat8 "mo:core/Nat8";
 import Nat "mo:core/Nat";
 import Text "mo:core/Text";
 import Principal "mo:core/Principal";
+
 import Runtime "mo:core/Runtime";
+
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
-import Migration "migration";
 
-(with migration = Migration.run)
 actor {
   // Access control system
   let accessControlState = AccessControl.initState();
@@ -23,7 +24,7 @@ actor {
     name : Text;
   };
 
-  let userProfiles = Map.empty<Principal, UserProfile>();
+  var userProfiles = Map.empty<Principal, UserProfile>();
 
   // Required UserProfile-related Functions
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
@@ -112,11 +113,15 @@ actor {
     status : Text;
     createdAt : Time.Time;
     updatedAt : Time.Time;
+    isYearlyRecurring : Bool;
   };
 
   // Storage
-  let contactsByPrincipal = Map.empty<Principal, List.List<Contact>>();
-  let giftPlansByPrincipal = Map.empty<Principal, Map.Map<Text, BirthdayGiftPlan>>();
+  var contactsByPrincipal = Map.empty<Principal, List.List<Contact>>();
+  var giftPlansByPrincipal : Map.Map<Principal, Map.Map<Text, BirthdayGiftPlan>> = Map.empty();
+
+  // Domain configuration storage
+  var configuredDomain : ?Text = null;
 
   // CRUD Contacts
   public query ({ caller }) func listContacts() : async [Contact] {
@@ -240,6 +245,7 @@ actor {
     budget : ?Nat,
     notes : ?Text,
     status : Text,
+    isYearlyRecurring : Bool,
   ) : async Text {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can add gift plans");
@@ -254,6 +260,7 @@ actor {
       status;
       createdAt = Time.now();
       updatedAt = Time.now();
+      isYearlyRecurring;
     };
 
     let currentPlans = switch (giftPlansByPrincipal.get(caller)) {
@@ -307,6 +314,7 @@ actor {
     budget : ?Nat,
     notes : ?Text,
     status : Text,
+    isYearlyRecurring : Bool,
   ) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can update gift plans");
@@ -327,6 +335,7 @@ actor {
               status;
               createdAt = plan.createdAt;
               updatedAt = Time.now();
+              isYearlyRecurring;
             };
             plans.add(id, updatedPlan);
           };
@@ -345,5 +354,28 @@ actor {
         plans.remove(id);
       };
     };
+  };
+
+  // Domain Management Functions
+  public shared ({ caller }) func suggestDomainSlugs(_ : Nat) : async [Text] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can generate domain slugs");
+    };
+    Array.tabulate<Text>(5, func(i) { "birthday-buddy-" # i.toText() });
+  };
+
+  public shared ({ caller }) func configureDomain(slug : Text) : async Text {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can configure domains");
+    };
+    configuredDomain := ?slug;
+    "https://" # slug # ".ic0.app";
+  };
+
+  public query ({ caller }) func getConfiguredDomain() : async ?Text {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can view configured domain");
+    };
+    configuredDomain;
   };
 };

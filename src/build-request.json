@@ -1,94 +1,53 @@
 {
   "kind": "build_request",
-  "title": "Add gift planning and manual gift sending tracking for birthday contacts",
+  "title": "Remove in-app domain name/domain configuration UI",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-12",
-      "text": "Add backend support for tracking per-contact birthday gift plans (manual tracking only) scoped to the authenticated caller principal.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "Can you add sending out gifts"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend defines a new public type for a gift plan associated to a contact (must include: id, contactId, giftName, optional note/message, optional vendorUrl, status, createdAt, updatedAt).",
-        "Gift plan records are stored per caller principal (each user only sees/manages their own gift plans).",
-        "Backend exposes canister methods to: listGiftPlans(), createGiftPlan(...), updateGiftPlan(...), deleteGiftPlan(id).",
-        "All gift-plan methods enforce the same authorization checks/patterns as existing contact/profile methods (unauthorized callers trap)."
-      ]
-    },
-    {
-      "id": "REQ-13",
-      "text": "Add a new “Gifts” tab in the authenticated app UI that lets users create, view, edit, and delete gift plans for their birthday contacts.",
+      "id": "REQ-1",
+      "text": "Remove the in-app domain configuration flow so the app UI no longer prompts users to pick/apply a domain slug or displays any applied domain URL inside the app.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "Can you add sending out gifts"
+          "Ok so I didn’t mean for you to add the domain name in the app."
         ]
       },
       "acceptanceCriteria": [
-        "App navigation includes a third tab labeled \"Gifts\" alongside the existing \"Upcoming\" and \"Contacts\" tabs.",
-        "The Gifts screen displays a list of gift plans with contact name, gift name, status, and last updated time.",
-        "Users can create a gift plan by selecting an existing contact and entering gift details; users can also edit and delete existing gift plans.",
-        "All user-facing text is in English.",
-        "The UI uses existing shadcn components and Tailwind styling consistent with the current app theme."
+        "The Upcoming dashboard no longer renders the DomainSlugSuggestionsCard (or any equivalent domain-setup UI).",
+        "No user-facing text in the app references applying/configuring a domain, domain slugs, or shows a public URL as part of an in-app success state.",
+        "Authenticated and unauthenticated user flows (login, profile setup, tabs, contacts, gifts, upcoming birthdays) continue to work without errors after removing the domain UI."
       ]
     },
     {
-      "id": "REQ-14",
-      "text": "Integrate gift plan data fetching/mutations using React Query and keep the UI in sync after create/update/delete operations.",
+      "id": "REQ-2",
+      "text": "Clean up unused domain-related frontend code paths after removing the domain UI entry point (components/hooks/utilities) so the frontend builds without unused-import/lint errors and no longer makes domain-related backend calls from the UI.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "Can you add sending out gifts"
+          "Ok so I didn’t mean for you to add the domain name in the app."
         ]
       },
       "acceptanceCriteria": [
-        "A dedicated React Query query is added to fetch gift plans from the canister and is enabled only when the actor is available.",
-        "React Query mutations exist for creating, updating, and deleting gift plans.",
-        "After any gift plan mutation succeeds, the relevant gift-plan query cache is invalidated so the Gifts list updates immediately without a manual refresh.",
-        "Errors and loading states are handled similarly to existing contacts/birthdays screens (skeletons + retry on error)."
-      ]
-    },
-    {
-      "id": "REQ-15",
-      "text": "Make “sending gifts” explicit as manual tracking in the UI by providing a status workflow (e.g., Planned → Ordered → Sent) and a quick action to mark a plan as Sent.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "Can you add sending out gifts"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Gift plans have a status field surfaced in the UI and can be updated by the user.",
-        "The Gifts list provides a one-click action to set status to \"Sent\" (with appropriate disabled/loading state while saving).",
-        "The UI does not claim that gifts are automatically delivered; it clearly presents the feature as tracking/planning."
+        "Frontend compiles successfully after removing the domain UI and related imports.",
+        "The app does not invoke domain-related hooks/mutations (e.g., suggestion fetching or configureDomain) during normal navigation."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor in backend/main.mo (no additional backend services).",
-    "Do not edit files under frontend/src/components/ui or other frontend immutablePaths; compose existing UI components instead.",
-    "No email-based automation and no third-party delivery/commerce integrations (manual planning/tracking only)."
+    "Do not modify files under frontend/src/components/ui (read-only).",
+    "Do not modify frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, or frontend/src/main.tsx (immutable paths).",
+    "Keep the backend as a single Motoko actor in backend/main.mo; only add a migration if state persistence changes require it."
   ],
   "nonGoals": [
-    "Integrating with external gift delivery providers (flowers/cake/balloons) or placing real orders.",
-    "Automatic scheduled sending of gifts without user action.",
-    "Sending email/SMS notifications or receipts."
+    "Do not implement or enhance custom domain publishing behavior.",
+    "Do not change Internet Identity authentication behavior.",
+    "Do not redesign unrelated parts of the app (contacts, gifts, upcoming birthdays) beyond what is necessary to remove domain UI."
   ],
   "imageRequirements": {
     "required": [],
