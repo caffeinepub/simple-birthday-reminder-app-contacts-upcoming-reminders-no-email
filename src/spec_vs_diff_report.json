@@ -1,48 +1,12 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-14T22:43:33.414Z",
-  "summary": "The diff does not fully remove/clean up the domain-configuration feature set: multiple domain-related components/hooks/libs remain and were modified, indicating domain functionality is still present in the codebase and likely not fully cleaned up per requirements.",
-  "missing_requirements": [
-    {
-      "id": "REQ-2",
-      "requirement": "Clean up unused domain-related frontend code paths after removing the domain UI entry point (components/hooks/utilities) so the frontend builds without unused-import/lint errors and no longer makes domain-related backend calls from the UI.",
-      "reason": "Domain-related UI and supporting code paths still exist (and were modified), which suggests the domain feature was not cleaned up/removed and may still be callable from the UI or at least remains as dead/unused code rather than being removed.",
-      "evidence": [
-        "frontend/src/components/DomainSlugSuggestionsCard.tsx",
-        "frontend/src/hooks/useDomainConfiguration.ts",
-        "frontend/src/hooks/useDomainSlugs.ts",
-        "frontend/src/lib/domainSlug.ts",
-        "frontend-file-summaries.txt"
-      ]
-    }
-  ],
-  "hallucinated_features": [
-    {
-      "description": "Continued/expanded in-app domain apply flow UI (suggested/custom slug selection, apply action, success state with final URL + copy-to-clipboard, retry/error states).",
-      "reason": "The BuildRequest asks to remove the in-app domain configuration flow; retaining or further implementing the full domain-apply UI is out of scope and conflicts with the removal goal.",
-      "evidence": [
-        "frontend/src/components/DomainSlugSuggestionsCard.tsx",
-        "frontend-file-summaries.txt"
-      ]
-    },
-    {
-      "description": "Domain slug suggestion fetching/validation behavior (regex validation and client-side fallback generation to produce exactly 5 candidates).",
-      "reason": "The BuildRequest explicitly focuses on removing domain UI and cleaning up domain-related code paths; enhancing domain slug suggestion logic is not requested and works against the intended removal.",
-      "evidence": [
-        "frontend/src/hooks/useDomainSlugs.ts",
-        "frontend-file-summaries.txt"
-      ]
-    }
-  ],
-  "confidence": 0.68,
+  "generatedAt": "2026-02-14T23:22:03.126Z",
+  "summary": "BuildRequest contains no explicit functional requirements; the diff only updates internal project metadata to reflect that Draft Version 11 is being published live, with no app changes shown.",
+  "missing_requirements": [],
+  "hallucinated_features": [],
+  "confidence": 0.74,
   "changed_files": [
-    "frontend-file-summaries.txt",
-    "frontend/src/components/DomainSlugSuggestionsCard.tsx",
-    "frontend/src/components/UpcomingDashboard.tsx",
-    "frontend/src/hooks/useDomainConfiguration.ts",
-    "frontend/src/hooks/useDomainSlugs.ts",
-    "frontend/src/lib/domainSlug.ts",
     "project_state.json"
   ]
 }

@@ -1,53 +1,6 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Remove domain configuration UI and related frontend code",
-  "requirements": [
-    {
-      "id": "REQ-1",
-      "summary": "Remove the in-app domain configuration UI so users are no longer prompted to choose/apply domain slugs or shown an applied domain URL anywhere in the app.",
-      "acceptanceCriteria": [
-        "The Upcoming dashboard no longer renders the DomainSlugSuggestionsCard (or any equivalent domain-setup UI).",
-        "No user-facing text in the app references applying/configuring a domain, domain slugs, or shows a public URL as part of an in-app success state.",
-        "Authenticated and unauthenticated user flows (login, profile setup, tabs, contacts, gifts, upcoming birthdays) continue to work without errors after removing the domain UI."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/UpcomingDashboard.tsx",
-          "operation": "modify",
-          "description": "Remove the DomainSlugSuggestionsCard import and JSX render so the Upcoming dashboard no longer shows any domain-setup prompt (do not modify any files under frontend/src/components/ui)."
-        },
-        {
-          "path": "frontend/src/components/DomainSlugSuggestionsCard.tsx",
-          "operation": "delete",
-          "description": "Delete the domain configuration card component that prompts users to select/apply a domain and displays a public URL success state."
-        }
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "summary": "Remove unused domain-related hooks/utilities and eliminate domain-related backend calls from the UI so the frontend builds cleanly without unused imports or lint issues.",
-      "acceptanceCriteria": [
-        "Frontend compiles successfully after removing the domain UI and related imports.",
-        "The app does not invoke domain-related hooks/mutations (e.g., suggestion fetching or configureDomain) during normal navigation."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useDomainConfiguration.ts",
-          "operation": "delete",
-          "description": "Remove domain configuration hooks (including calls to getConfiguredDomain/configureDomain) so the UI no longer performs domain-related backend calls."
-        },
-        {
-          "path": "frontend/src/hooks/useDomainSlugs.ts",
-          "operation": "delete",
-          "description": "Remove the domain slug suggestion hook to prevent any suggestion-fetching behavior or related caching from being triggered."
-        },
-        {
-          "path": "frontend/src/lib/domainSlug.ts",
-          "operation": "delete",
-          "description": "Remove domain slug validation/normalization utilities if they are no longer referenced after deleting the domain UI/hooks, ensuring no unused-import errors remain."
-        }
-      ]
-    }
-  ]
+  "title": "Publish Draft Version 11 live (frontend-only)",
+  "requirements": []
 }

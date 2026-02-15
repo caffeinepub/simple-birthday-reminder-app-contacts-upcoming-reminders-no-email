@@ -1,16 +1,10 @@
-import Array "mo:core/Array";
-import Iter "mo:core/Iter";
 import Map "mo:core/Map";
 import Time "mo:core/Time";
 import List "mo:core/List";
-import Order "mo:core/Order";
 import Nat8 "mo:core/Nat8";
-import Nat "mo:core/Nat";
 import Text "mo:core/Text";
 import Principal "mo:core/Principal";
-
 import Runtime "mo:core/Runtime";
-
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
@@ -20,13 +14,9 @@ actor {
   include MixinAuthorization(accessControlState);
 
   // User Profile Type
-  public type UserProfile = {
-    name : Text;
-  };
-
+  public type UserProfile = { name : Text };
   var userProfiles = Map.empty<Principal, UserProfile>();
 
-  // Required UserProfile-related Functions
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access profiles");
@@ -60,22 +50,13 @@ actor {
     updatedAt : Time.Time;
   };
 
-  module Contact {
-    public func compareByBirthday(contact1 : Contact, contact2 : Contact) : Order.Order {
-      if (contact1.birthMonth == contact2.birthMonth) {
-        return Nat8.compare(contact1.birthDay, contact2.birthDay);
-      };
-      Nat8.compare(contact1.birthMonth, contact2.birthMonth);
-    };
-  };
-
+  // Birthday Range Helper
   public type BirthdayRange = {
     startDate : Time.Time;
     durationDays : Nat;
   };
 
-  // Helper Functions
-  func hasBirthdayInRange(contact : Contact, currentTime : Time.Time, searchRange : BirthdayRange) : Bool {
+  func hasBirthdayInRange(contact : Contact, _currentTime : Time.Time, searchRange : BirthdayRange) : Bool {
     let currentMonth = 5 : Nat8;
     let currentDay = 28 : Nat8;
 
@@ -97,9 +78,7 @@ actor {
     (
       contact.birthMonth <= 12 and
       contact.birthDay <= 30 and
-      (
-        (contact.birthMonth.toNat() - 1) * 30 + contact.birthDay.toNat() <= remainingDays
-      )
+      ((contact.birthMonth.toNat() - 1) * 30 + contact.birthDay.toNat() <= remainingDays)
     ));
   };
 
@@ -135,25 +114,15 @@ actor {
   };
 
   public shared ({ caller }) func createContact(
-    id : Text,
-    name : Text,
-    birthMonth : Nat8,
-    birthDay : Nat8,
-    birthYear : ?Nat,
-    notes : ?Text,
+    id : Text, name : Text, birthMonth : Nat8, birthDay : Nat8,
+    birthYear : ?Nat, notes : ?Text,
   ) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can create contacts");
     };
     let newContact : Contact = {
-      id;
-      name;
-      birthMonth;
-      birthDay;
-      birthYear;
-      notes;
-      createdAt = Time.now();
-      updatedAt = Time.now();
+      id; name; birthMonth; birthDay; birthYear; notes;
+      createdAt = Time.now(); updatedAt = Time.now();
     };
 
     let currentContacts = switch (contactsByPrincipal.get(caller)) {
@@ -166,12 +135,8 @@ actor {
   };
 
   public shared ({ caller }) func updateContact(
-    id : Text,
-    name : Text,
-    birthMonth : Nat8,
-    birthDay : Nat8,
-    birthYear : ?Nat,
-    notes : ?Text,
+    id : Text, name : Text, birthMonth : Nat8, birthDay : Nat8,
+    birthYear : ?Nat, notes : ?Text,
   ) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can update contacts");
@@ -182,19 +147,8 @@ actor {
         let updatedContacts = contacts.map<Contact, Contact>(
           func(contact) {
             if (contact.id == id) {
-              {
-                id;
-                name;
-                birthMonth;
-                birthDay;
-                birthYear;
-                notes;
-                createdAt = contact.createdAt;
-                updatedAt = Time.now();
-              };
-            } else {
-              contact;
-            };
+              { id; name; birthMonth; birthDay; birthYear; notes; createdAt = contact.createdAt; updatedAt = Time.now() };
+            } else { contact };
           }
         );
         contactsByPrincipal.add(caller, updatedContacts);
@@ -225,41 +179,27 @@ actor {
       case (null) { [] };
       case (?contacts) {
         let currentTime = Time.now();
-        let searchRange : BirthdayRange = {
-          startDate = currentTime;
-          durationDays = daysAhead;
-        };
+        let searchRange : BirthdayRange = { startDate = currentTime; durationDays = daysAhead };
         let filteredContacts = contacts.filter(
           func(contact) { hasBirthdayInRange(contact, currentTime, searchRange) }
         );
-        filteredContacts.toArray().sort(Contact.compareByBirthday);
+        filteredContacts.toArray();
       };
     };
   };
 
   // CRUD Gift Plans
   public shared ({ caller }) func addBirthdayGiftPlan(
-    contactId : Text,
-    giftIdea : Text,
-    plannedDate : Time.Time,
-    budget : ?Nat,
-    notes : ?Text,
-    status : Text,
-    isYearlyRecurring : Bool,
+    contactId : Text, giftIdea : Text, plannedDate : Time.Time,
+    budget : ?Nat, notes : ?Text, status : Text, isYearlyRecurring : Bool
   ) : async Text {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can add gift plans");
     };
     let id = contactId;
     let newGiftPlan : BirthdayGiftPlan = {
-      contactId;
-      giftIdea;
-      plannedDate;
-      budget;
-      notes;
-      status;
-      createdAt = Time.now();
-      updatedAt = Time.now();
+      contactId; giftIdea; plannedDate; budget; notes; status;
+      createdAt = Time.now(); updatedAt = Time.now();
       isYearlyRecurring;
     };
 
@@ -308,13 +248,8 @@ actor {
   };
 
   public shared ({ caller }) func updateBirthdayGiftPlan(
-    id : Text,
-    giftIdea : Text,
-    plannedDate : Time.Time,
-    budget : ?Nat,
-    notes : ?Text,
-    status : Text,
-    isYearlyRecurring : Bool,
+    id : Text, giftIdea : Text, plannedDate : Time.Time,
+    budget : ?Nat, notes : ?Text, status : Text, isYearlyRecurring : Bool
   ) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can update gift plans");
@@ -328,13 +263,8 @@ actor {
           case (?plan) {
             let updatedPlan : BirthdayGiftPlan = {
               contactId = plan.contactId;
-              giftIdea;
-              plannedDate;
-              budget;
-              notes;
-              status;
-              createdAt = plan.createdAt;
-              updatedAt = Time.now();
+              giftIdea; plannedDate; budget; notes; status;
+              createdAt = plan.createdAt; updatedAt = Time.now();
               isYearlyRecurring;
             };
             plans.add(id, updatedPlan);
@@ -356,12 +286,11 @@ actor {
     };
   };
 
-  // Domain Management Functions
   public shared ({ caller }) func suggestDomainSlugs(_ : Nat) : async [Text] {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can generate domain slugs");
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can generate domain slugs");
     };
-    Array.tabulate<Text>(5, func(i) { "birthday-buddy-" # i.toText() });
+    ["birthday-buddy-0", "birthday-buddy-1", "birthday-buddy-2", "birthday-buddy-3", "birthday-buddy-4"];
   };
 
   public shared ({ caller }) func configureDomain(slug : Text) : async Text {

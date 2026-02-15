@@ -1,11 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Remove the in-app domain configuration experience so the UI no longer prompts users to select/apply a domain slug or shows an applied domain URL.
+**Goal:** Publish the current Draft Version 11 build live to a production Internet Computer canister without changing application functionality.
 
 **Planned changes:**
-- Remove the domain-setup UI entry points from the Upcoming dashboard (e.g., stop rendering `DomainSlugSuggestionsCard` or equivalent).
-- Remove/clean up domain-related frontend code paths (components/hooks/utilities) so the app no longer triggers domain suggestion/configuration calls during normal navigation and builds without unused import/lint issues.
-- Ensure core authenticated/unauthenticated flows (login, profile setup, tabs, contacts, gifts, upcoming birthdays) continue to work without errors after removing the domain UI.
+- Deploy the existing draft build to the production (live) Internet Computer canister.
+- Ensure any user-facing text remains in English.
 
-**User-visible outcome:** Users will no longer see any in-app prompts or success messages related to domains/domain slugs/public URLs, and the rest of the app will function as before.
+**User-visible outcome:** Users can access and use Draft Version 11 on the live (production) deployment with no functional changes.

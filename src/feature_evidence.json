@@ -1,46 +1,4 @@
 {
   "kind": "feature_evidence_report",
-  "features": [
-    {
-      "featureId": "feature-remove-the-in-app-domain-configuration-flow-so-the-app-ui-no-longer-prompts-users-to-pick-apply-a-domain-slug-or-displays-any-applied-domain-url-inside-the-app",
-      "featureTitle": "Remove the in-app domain configuration flow so the app UI no longer prompts users to pick/apply a domain slug or displays any applied domain URL inside the app.",
-      "files": [
-        "frontend/src/components/DomainSlugSuggestionsCard.tsx",
-        "frontend/src/components/UpcomingDashboard.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-1"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-clean-up-unused-domain-related-frontend-code-paths-after-removing-the-domain-ui-entry-point-components-hooks-utilities-so-the-frontend-builds-without-unused-import-lint-errors-and-no-longer-makes-domain-related-backend-calls-from-the-ui",
-      "featureTitle": "Clean up unused domain-related frontend code paths after removing the domain UI entry point (components/hooks/utilities) so the frontend builds without unused-import/lint errors and no longer makes domain-related backend calls from the UI.",
-      "files": [
-        "frontend/src/hooks/useDomainConfiguration.ts",
-        "frontend/src/hooks/useDomainSlugs.ts",
-        "frontend/src/lib/domainSlug.ts"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-2"
-      ],
-      "confidence": "high"
-    }
-  ]
+  "features": []
 }

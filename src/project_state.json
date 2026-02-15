@@ -1,39 +1,15 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "New project",
-  "architectural_notes": [],
-  "known_issues": [
-    "Domain name was unintentionally added/embedded in the app and needs to be removed."
+  "summary": "Project is being built and published live (Draft Version 11).",
+  "architectural_notes": [
+    "User requested publishing Draft Version 11 live; deployment/build initiated."
   ],
-  "isFixRequest": true,
-  "existing_features": [
-    {
-      "id": "feature-remove-the-in-app-domain-configuration-flow-so-the-app-ui-no-longer-prompts-users-to-pick-apply-a-domain-slug-or-displays-any-applied-domain-url-inside-the-app",
-      "title": "Remove the in-app domain configuration flow so the app UI no longer prompts users to pick/apply a domain slug or displays any applied domain URL inside the app.",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-clean-up-unused-domain-related-frontend-code-paths-after-removing-the-domain-ui-entry-point-components-hooks-utilities-so-the-frontend-builds-without-unused-import-lint-errors-and-no-longer-makes-domain-related-backend-calls-from-the-ui",
-      "title": "Clean up unused domain-related frontend code paths after removing the domain UI entry point (components/hooks/utilities) so the frontend builds without unused-import/lint errors and no longer makes domain-related backend calls from the UI.",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "version": 1
-    }
-  ],
-  "new_feature_requests": [
-    {
-      "id": "AR-1",
-      "summary": "Remove/revert the domain name that was added inside the app (was not intended to be included in-app UI/content).",
-      "reqIds": [],
-      "status": "pending"
-    }
-  ],
-  "projectName": "Remove in-app domain name/domain configuration UI",
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [],
+  "new_feature_requests": [],
+  "projectName": "Publish Draft Version 11 live",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

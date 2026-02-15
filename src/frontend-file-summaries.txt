@@ -18,5 +18,8 @@
   "frontend/src/hooks/useDomainSlugs.ts": "React Query hook that fetches domain slug suggestions from the backend, validates them against the regex ^[a-z0-9-]{5,50}$, and provides client-side fallback generation with Birthday Buddy-related terms to guarantee exactly 5 valid candidates.",
   "frontend/src/components/DomainSlugSuggestionsCard.tsx": "Full domain apply flow with suggested/custom slug selection, inline validation, apply action with loading state, success state showing the final URL with copy-to-clipboard, and error state with retry functionality.",
   "frontend/src/lib/domainSlug.ts": "Shared domain slug validation helpers with platform rules (5-50 characters, lowercase letters/numbers/hyphens only) and user-facing error messages.",
-  "frontend/src/hooks/useDomainConfiguration.ts": "React Query hooks for fetching the configured domain and applying a new domain slug with proper error handling and cache invalidation."
+  "frontend/src/hooks/useDomainConfiguration.ts": "React Query hooks for fetching the configured domain and applying a new domain slug with proper error handling and cache invalidation.",
+  "frontend/DEPLOYMENT.md": "Comprehensive deployment runbook documenting prerequisites, build commands, deployment steps, URL extraction methods, post-deployment verification, and troubleshooting for deploying Birthday Buddy to the Internet Computer mainnet.",
+  "frontend/scripts/print-live-icp0-url.sh": "Bash helper script that extracts the frontend canister ID from DFX and prints the complete icp0.io and ic0.app live URLs with error handling for missing deployments.",
+  "frontend/DEPLOYMENT_CHECKLIST.md": "Detailed pre-deployment, deployment, and post-deployment verification checklist covering build phase, authentication, core features, UI/UX, data persistence, and URL verification to ensure successful production deployment."
 }
